@@ -140,7 +140,6 @@ install_zsh_stack() {
 
 main() {
   install_fonts
-  install_sourcegit
   install_flatpak_apps
   install_chezmoi
   install_zsh_stack
