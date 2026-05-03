@@ -6,7 +6,6 @@ autoinstall:
     update: true
   keyboard:
     layout: br
-    variant: abnt2
   storage:
     layout:
       name: lvm
