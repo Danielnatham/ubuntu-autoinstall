@@ -54,57 +54,23 @@ install_fonts() {
   fc-cache -f
 }
 
-install_sourcegit() {
-  local arch release_json version asset_url tmp_deb
-
-  arch="$(dpkg --print-architecture)"
-  case "${arch}" in
-    amd64|arm64) ;;
-    *)
-      echo "Arquitetura sem pacote SourceGit automatizado: ${arch}" >&2
-      exit 1
-      ;;
-  esac
-
-  release_json="$(curl -fsSL https://api.github.com/repos/sourcegit-scm/sourcegit/releases/latest)"
-  version="$(printf '%s' "${release_json}" | jq -r '.tag_name | ltrimstr("v")')"
-  asset_url="$(printf '%s' "${release_json}" | jq -r --arg arch "${arch}" '.assets[] | select(.name | endswith("_" + $arch + ".deb")) | .browser_download_url' | head -n1)"
-
-  if [[ -z "${asset_url}" ]]; then
-    echo "Nao foi possivel localizar o .deb do SourceGit para ${arch}." >&2
-    exit 1
-  fi
-
-  if dpkg-query -W -f='${Version}\n' sourcegit 2>/dev/null | grep -q "^${version}"; then
-    return
-  fi
-
-  tmp_deb="$(mktemp --suffix=.deb)"
-
-  curl -fsSL "${asset_url}" -o "${tmp_deb}"
-  apt-get install -y "${tmp_deb}"
-  rm -f "${tmp_deb}"
-}
-
 install_flatpak_apps() {
   local app_ids=(
-    com.spotify.Client
     com.rtosta.zapzap
     io.dbeaver.DBeaverCommunity
-    io.github.tobagin.sonar
+    # io.github.tobagin.sonar
     com.usebruno.Bruno
-    me.iepure.devtoolbox
-    io.github.pol_rivero.github-desktop-plus
+    # me.iepure.devtoolbox
     com.discordapp.Discord
     com.github.tchx84.Flatseal
     org.videolan.VLC
-    com.visualstudio.code
-    com.vivaldi.Vivaldi
+    # com.vivaldi.Vivaldi
     md.obsidian.Obsidian
   )
 
   flatpak remote-add --if-not-exists --system "${FLATPAK_REMOTE}" https://flathub.org/repo/flathub.flatpakrepo
-  flatpak install -y --noninteractive --system "${FLATPAK_REMOTE}" "${app_ids[@]}"
+  # Install and ignore erors
+  flatpak install -y --noninteractive --system "${FLATPAK_REMOTE}" "${app_ids[@]}" || true
 }
 
 install_chezmoi() {
@@ -140,9 +106,9 @@ install_zsh_stack() {
 
 main() {
   install_fonts
-  install_flatpak_apps
-  install_chezmoi
   install_zsh_stack
+  install_chezmoi
+  install_flatpak_apps
 
   run_as_user "chezmoi init --apply Danielnatham/dotfiles"
 

@@ -46,11 +46,6 @@ autoinstall:
     - gnome-shell-extension-manager
     - xclip
     - zsh
-  identity:
-    realname: "Dan"
-    username: "dan"
-    hostname: "inspirion-15"
-    password: "$6$GW6aMs8a83M8tOWk$9m0z6qBuAfcFtTb5KYZ97RlrcL5GWXaZ1Tf5SE2vqrFx4yaGGhAqEzQNviijzWxHmlRSCs1tI58nwqf.vxnoH0" #Mudar@123
   user-data:
     disable_root: true
   late-commands:
@@ -69,7 +64,7 @@ autoinstall:
     # Habilitar serviços e configurar usuário
     - curtin in-target --target=/target -- systemctl enable docker
     - curtin in-target --target=/target -- systemctl enable tailscaled
-    - curtin in-target --target=/target -- usermod -aG docker dan
+    - curtin in-target --target=/target -- usermod -aG docker $USER
     - curtin in-target --target=/target -- bash -lc '/opt/ubuntu-autoinstall/post-install.sh'
-    - curtin in-target --target=/target -- chsh -s /usr/bin/zsh dan
+    - curtin in-target --target=/target -- chsh -s /usr/bin/zsh $USER$USER
   shutdown: reboot
